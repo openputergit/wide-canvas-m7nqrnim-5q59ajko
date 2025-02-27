@@ -1,0 +1,2520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            DEFAULT: '#4299e1',
+                            light: '#63b3ed',
+                            dark: '#3182ce',
+                        },
+                        secondary: {
+                            DEFAULT: '#2d3748',
+                            light: '#4a5568',
+                            dark: '#1a202c',
+                        },
+                        accent: {
+                            DEFAULT: '#48bb78',
+                            light: '#68d391',
+                            dark: '#38a169',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #4299e1;
+            border-radius: 4px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #3182ce;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-white shadow-sm">
+            <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center">
+                    <span class="text-2xl font-bold text-primary"><i class="bi bi-calendar-check mr-2"></i>AttendX</span>
+                </div>
+                <div class="hidden md:flex space-x-6 items-center">
+                    <a href="#" class="text-gray-700 hover:text-primary transition-colors" id="dashboard-link">Dashboard</a>
+                    <a href="#" class="text-gray-700 hover:text-primary transition-colors" id="students-link">Students</a>
+                    <a href="#" class="text-gray-700 hover:text-primary transition-colors" id="subjects-link">Subjects</a>
+                    <a href="#" class="text-gray-700 hover:text-primary transition-colors" id="timetable-link">Timetable</a>
+                    <a href="#" class="text-gray-700 hover:text-primary transition-colors" id="reports-link">Reports</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-gray-700 hover:text-primary transition-colors">
+                        <i class="bi bi-list text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- Mobile menu -->
+            <div id="mobile-menu" class="hidden px-4 pb-4 md:hidden bg-white">
+                <div class="flex flex-col space-y-3">
+                    <a href="#" class="text-gray-700 hover:text-primary transition-colors py-2" id="mobile-dashboard-link">Dashboard</a>
+                    <a href="#" class="text-gray-700 hover:text-primary transition-colors py-2" id="mobile-students-link">Students</a>
+                    <a href="#" class="text-gray-700 hover:text-primary transition-colors py-2" id="mobile-subjects-link">Subjects</a>
+                    <a href="#" class="text-gray-700 hover:text-primary transition-colors py-2" id="mobile-timetable-link">Timetable</a>
+                    <a href="#" class="text-gray-700 hover:text-primary transition-colors py-2" id="mobile-reports-link">Reports</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow container mx-auto px-4 py-6">
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="fade-in space-y-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                    <h1 class="text-2xl font-semibold text-gray-800">Dashboard</h1>
+                    <div class="mt-4 md:mt-0">
+                        <p class="text-gray-600">Today: <span id="current-date" class="font-medium"></span></p>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-sm font-medium text-gray-500">Total Students</h2>
+                            <div class="p-2 bg-blue-100 text-primary rounded-full">
+                                <i class="bi bi-people"></i>
+                            </div>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-800" id="total-students">0</p>
+                        <p class="text-sm text-green-600 mt-2">
+                            <i class="bi bi-arrow-up-short"></i> Added recently
+                        </p>
+                    </div>
+                    
+                    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-sm font-medium text-gray-500">Total Subjects</h2>
+                            <div class="p-2 bg-purple-100 text-purple-600 rounded-full">
+                                <i class="bi bi-book"></i>
+                            </div>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-800" id="total-subjects">0</p>
+                        <p class="text-sm text-green-600 mt-2">
+                            <i class="bi bi-arrow-up-short"></i> Added recently
+                        </p>
+                    </div>
+                    
+                    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-sm font-medium text-gray-500">Today's Attendance</h2>
+                            <div class="p-2 bg-green-100 text-green-600 rounded-full">
+                                <i class="bi bi-check2-circle"></i>
+                            </div>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-800">0%</p>
+                        <p class="text-sm text-gray-500 mt-2">No data for today</p>
+                    </div>
+                    
+                    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-sm font-medium text-gray-500">Absentees Today</h2>
+                            <div class="p-2 bg-red-100 text-red-600 rounded-full">
+                                <i class="bi bi-x-circle"></i>
+                            </div>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-800">0</p>
+                        <p class="text-sm text-gray-500 mt-2">No data for today</p>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6 mt-6">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <button id="quick-take-attendance" class="flex flex-col items-center justify-center p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
+                            <i class="bi bi-clipboard-check text-2xl text-primary mb-2"></i>
+                            <span class="text-sm text-gray-600">Take Attendance</span>
+                        </button>
+                        <button id="quick-add-student" class="flex flex-col items-center justify-center p-4 bg-green-50 hover:bg-green-100 rounded-lg transition-colors">
+                            <i class="bi bi-person-plus text-2xl text-green-600 mb-2"></i>
+                            <span class="text-sm text-gray-600">Add Student</span>
+                        </button>
+                        <button id="quick-add-subject" class="flex flex-col items-center justify-center p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors">
+                            <i class="bi bi-journal-plus text-2xl text-purple-600 mb-2"></i>
+                            <span class="text-sm text-gray-600">Add Subject</span>
+                        </button>
+                        <button id="quick-view-report" class="flex flex-col items-center justify-center p-4 bg-amber-50 hover:bg-amber-100 rounded-lg transition-colors">
+                            <i class="bi bi-bar-chart text-2xl text-amber-600 mb-2"></i>
+                            <span class="text-sm text-gray-600">View Reports</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6 mt-6">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4">Recent Activity</h2>
+                    <div class="overflow-y-auto custom-scrollbar" style="max-height: 300px;">
+                        <div class="flex items-start space-x-4 p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                            <div class="p-2 bg-gray-100 text-gray-500 rounded-full">
+                                <i class="bi bi-activity"></i>
+                            </div>
+                            <div>
+                                <p class="text-gray-800">Welcome to AttendX!</p>
+                                <p class="text-sm text-gray-500 mt-1">Start by adding students and subjects to your database.</p>
+                                <p class="text-xs text-gray-400 mt-1">Just now</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Students Section -->
+            <section id="students-section" class="hidden fade-in space-y-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                    <h1 class="text-2xl font-semibold text-gray-800">Students Management</h1>
+                    <button id="add-student-btn" class="mt-4 md:mt-0 px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors flex items-center">
+                        <i class="bi bi-plus-circle mr-2"></i> Add Student
+                    </button>
+                </div>
+
+                <!-- Filter & Search -->
+                <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-4">
+                    <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                        <div class="flex-grow">
+                            <div class="relative">
+                                <input type="text" id="search-students" placeholder="Search students..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary pl-10">
+                                <i class="bi bi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Students Table -->
+                <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <tr>
+                                    <th class="px-6 py-3 text-left">ID</th>
+                                    <th class="px-6 py-3 text-left">Name</th>
+                                    <th class="px-6 py-3 text-left">Class/Section</th>
+                                    <th class="px-6 py-3 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="students-list" class="divide-y divide-gray-200 text-sm text-gray-700">
+                                <tr class="bg-gray-50">
+                                    <td colspan="4" class="px-6 py-12 text-center text-gray-500">
+                                        <i class="bi bi-people text-4xl mb-3 block"></i>
+                                        <p>No students added yet</p>
+                                        <button id="empty-add-student-btn" class="mt-3 px-4 py-2 bg-primary hover:bg-primary-dark text-white text-sm rounded-lg transition-colors inline-flex items-center">
+                                            <i class="bi bi-plus-circle mr-2"></i> Add Your First Student
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Subjects Section -->
+            <section id="subjects-section" class="hidden fade-in space-y-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                    <h1 class="text-2xl font-semibold text-gray-800">Subjects Management</h1>
+                    <button id="add-subject-btn" class="mt-4 md:mt-0 px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors flex items-center">
+                        <i class="bi bi-plus-circle mr-2"></i> Add Subject
+                    </button>
+                </div>
+
+                <!-- Filter & Search -->
+                <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-4">
+                    <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                        <div class="flex-grow">
+                            <div class="relative">
+                                <input type="text" id="search-subjects" placeholder="Search subjects..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary pl-10">
+                                <i class="bi bi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subjects Table -->
+                <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <tr>
+                                    <th class="px-6 py-3 text-left">Subject Code</th>
+                                    <th class="px-6 py-3 text-left">Subject Name</th>
+                                    <th class="px-6 py-3 text-left">Instructor</th>
+                                    <th class="px-6 py-3 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="subjects-list" class="divide-y divide-gray-200 text-sm text-gray-700">
+                                <tr class="bg-gray-50">
+                                    <td colspan="4" class="px-6 py-12 text-center text-gray-500">
+                                        <i class="bi bi-book text-4xl mb-3 block"></i>
+                                        <p>No subjects added yet</p>
+                                        <button id="empty-add-subject-btn" class="mt-3 px-4 py-2 bg-primary hover:bg-primary-dark text-white text-sm rounded-lg transition-colors inline-flex items-center">
+                                            <i class="bi bi-plus-circle mr-2"></i> Add Your First Subject
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Timetable Section -->
+            <section id="timetable-section" class="hidden fade-in space-y-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                    <h1 class="text-2xl font-semibold text-gray-800">Timetable Management</h1>
+                    <button id="add-schedule-btn" class="mt-4 md:mt-0 px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors flex items-center">
+                        <i class="bi bi-plus-circle mr-2"></i> Add Schedule
+                    </button>
+                </div>
+
+                <!-- Timetable View -->
+                <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-4">
+                    <div class="mb-4 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 items-center">
+                        <select id="timetable-class-select" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary">
+                            <option value="">Select Class/Section</option>
+                        </select>
+                        <p class="text-sm text-gray-500">No classes added yet. Add students and subjects first.</p>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full border-collapse">
+                            <thead>
+                                <tr>
+                                    <th class="border border-gray-200 bg-gray-50 p-3 text-xs font-medium text-gray-500 uppercase">Time/Day</th>
+                                    <th class="border border-gray-200 bg-gray-50 p-3 text-xs font-medium text-gray-500 uppercase">Monday</th>
+                                    <th class="border border-gray-200 bg-gray-50 p-3 text-xs font-medium text-gray-500 uppercase">Tuesday</th>
+                                    <th class="border border-gray-200 bg-gray-50 p-3 text-xs font-medium text-gray-500 uppercase">Wednesday</th>
+                                    <th class="border border-gray-200 bg-gray-50 p-3 text-xs font-medium text-gray-500 uppercase">Thursday</th>
+                                    <th class="border border-gray-200 bg-gray-50 p-3 text-xs font-medium text-gray-500 uppercase">Friday</th>
+                                </tr>
+                            </thead>
+                            <tbody id="timetable-body">
+                                <!-- Rows will be added here dynamically -->
+                                <tr>
+                                    <td colspan="6" class="border border-gray-200 p-12 text-center text-gray-500">
+                                        <i class="bi bi-calendar3 text-4xl mb-3 block"></i>
+                                        <p>No timetable entries yet</p>
+                                        <p class="text-sm mt-2">Add students, subjects, and schedules to view the timetable</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Attendance Section -->
+            <section id="attendance-section" class="hidden fade-in space-y-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                    <div>
+                        <h1 class="text-2xl font-semibold text-gray-800">Attendance Management</h1>
+                        <p class="text-sm text-gray-500 mt-1">Mark attendance for <span id="attendance-date" class="font-medium"></span></p>
+                    </div>
+                    <div class="mt-4 md:mt-0 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                        <input type="date" id="attendance-date-picker" class="px-4 py-2 border border-gray-300 rounded-lg">
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-4">
+                    <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                        <div>
+                            <label for="attendance-class" class="block text-sm font-medium text-gray-700 mb-1">Class/Section</label>
+                            <select id="attendance-class" class="px-4 py-2 border border-gray-300 rounded-lg">
+                                <option value="">Select Class</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="attendance-subject" class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                            <select id="attendance-subject" class="px-4 py-2 border border-gray-300 rounded-lg">
+                                <option value="">Select Subject</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Attendance Table -->
+                <div id="attendance-table-container" class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <tr>
+                                    <th class="px-6 py-3 text-left">Roll No</th>
+                                    <th class="px-6 py-3 text-left">Student Name</th>
+                                    <th class="px-6 py-3 text-center">Attendance</th>
+                                    <th class="px-6 py-3 text-left">Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendance-list" class="divide-y divide-gray-200 text-sm text-gray-700">
+                                <tr class="bg-gray-50">
+                                    <td colspan="4" class="px-6 py-12 text-center text-gray-500">
+                                        <i class="bi bi-calendar-check text-4xl mb-3 block"></i>
+                                        <p>No data available</p>
+                                        <p class="text-sm mt-2">Please select a class and subject</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="save-attendance-container" class="p-4 border-t border-gray-200 bg-gray-50 hidden">
+                        <button id="save-attendance-btn" class="w-full md:w-auto px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors flex items-center justify-center">
+                            <i class="bi bi-save mr-2"></i> Save Attendance
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reports Section -->
+            <section id="reports-section" class="hidden fade-in space-y-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                    <h1 class="text-2xl font-semibold text-gray-800">Attendance Reports</h1>
+                    <div class="mt-4 md:mt-0 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                        <select id="report-type" class="px-4 py-2 border border-gray-300 rounded-lg">
+                            <option value="daily">Daily Report</option>
+                            <option value="subject">Subject-wise Report</option>
+                            <option value="student">Student-wise Report</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Report Filters -->
+                <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-4">
+                    <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                        <!-- Daily Report -->
+                        <div id="daily-filter" class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 w-full">
+                            <div class="w-full sm:w-1/3">
+                                <label for="report-date" class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                                <input type="date" id="report-date" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                            </div>
+                            <div class="w-full sm:w-1/3">
+                                <label for="report-class" class="block text-sm font-medium text-gray-700 mb-1">Class/Section</label>
+                                <select id="report-class" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                    <option value="">Select Class</option>
+                                </select>
+                            </div>
+                            <div class="w-full sm:w-1/3">
+                                <label for="report-subject" class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                                <select id="report-subject" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                    <option value="">Select Subject</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Subject Report -->
+                        <div id="subject-filter" class="hidden flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 w-full">
+                            <div class="w-full sm:w-1/3">
+                                <label for="subject-report-subject" class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                                <select id="subject-report-subject" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                    <option value="">Select Subject</option>
+                                </select>
+                            </div>
+                            <div class="w-full sm:w-1/3">
+                                <label for="subject-report-class" class="block text-sm font-medium text-gray-700 mb-1">Class/Section</label>
+                                <select id="subject-report-class" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                    <option value="">Select Class</option>
+                                </select>
+                            </div>
+                            <div class="w-full sm:w-1/3 flex space-x-2">
+                                <div class="w-1/2">
+                                    <label for="subject-start-date" class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                                    <input type="date" id="subject-start-date" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                </div>
+                                <div class="w-1/2">
+                                    <label for="subject-end-date" class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                                    <input type="date" id="subject-end-date" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Student Report -->
+                        <div id="student-filter" class="hidden flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 w-full">
+                            <div class="w-full sm:w-1/3">
+                                <label for="student-report-class" class="block text-sm font-medium text-gray-700 mb-1">Class/Section</label>
+                                <select id="student-report-class" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                    <option value="">Select Class</option>
+                                </select>
+                            </div>
+                            <div class="w-full sm:w-1/3">
+                                <label for="student-report-student" class="block text-sm font-medium text-gray-700 mb-1">Student</label>
+                                <select id="student-report-student" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                    <option value="">Select Student</option>
+                                </select>
+                            </div>
+                            <div class="w-full sm:w-1/3 flex space-x-2">
+                                <div class="w-1/2">
+                                    <label for="student-start-date" class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                                    <input type="date" id="student-start-date" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                </div>
+                                <div class="w-1/2">
+                                    <label for="student-end-date" class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                                    <input type="date" id="student-end-date" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button id="generate-report-btn" class="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors flex items-center">
+                            <i class="bi bi-file-earmark-text mr-2"></i> Generate Report
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Report Results -->
+                <div id="report-results" class="bg-white border border-gray-200 rounded-lg shadow-sm p-6 hidden">
+                    <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center">
+                        <h2 class="text-lg font-semibold text-gray-800" id="report-title">Daily Attendance Report</h2>
+                        <div class="mt-4 sm:mt-0">
+                            <button id="export-report-btn" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center">
+                                <i class="bi bi-file-earmark-excel mr-2"></i> Export to Excel
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Report Summary -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <p class="text-sm text-blue-600">Total Students</p>
+                            <p class="text-2xl font-bold text-blue-700" id="report-total-students">0</p>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <p class="text-sm text-green-600">Present</p>
+                            <p class="text-2xl font-bold text-green-700" id="report-present">0 (0%)</p>
+                        </div>
+                        <div class="bg-red-50 p-4 rounded-lg">
+                            <p class="text-sm text-red-600">Absent</p>
+                            <p class="text-2xl font-bold text-red-700" id="report-absent">0 (0%)</p>
+                        </div>
+                    </div>
+
+                    <!-- Report Data -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <tr id="report-headers">
+                                    <th class="px-6 py-3 text-left">Roll No</th>
+                                    <th class="px-6 py-3 text-left">Student Name</th>
+                                    <th class="px-6 py-3 text-center">Status</th>
+                                    <th class="px-6 py-3 text-left">Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody id="report-data" class="divide-y divide-gray-200 text-sm text-gray-700">
+                                <tr class="bg-gray-50">
+                                    <td colspan="4" class="px-6 py-12 text-center text-gray-500">
+                                        <p>No report data to display</p>
+                                        <p class="text-sm mt-2">Select filters and generate a report</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Modals -->
+        <!-- Add Student Modal -->
+        <div id="add-student-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+            <div class="bg-white rounded-lg shadow-lg w-full max-w-lg mx-4 overflow-hidden">
+                <div class="flex items-center justify-between p-4 border-b">
+                    <h2 class="text-xl font-semibold text-gray-800">Add New Student</h2>
+                    <button class="close-modal text-gray-500 hover:text-gray-700">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+                <div class="p-6">
+                    <form id="add-student-form" class="space-y-4">
+                        <div>
+                            <label for="student-id" class="block text-sm font-medium text-gray-700 mb-1">Student ID</label>
+                            <input type="text" id="student-id" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" placeholder="e.g. S001" required>
+                        </div>
+                        <div>
+                            <label for="student-name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                            <input type="text" id="student-name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" placeholder="e.g. John Doe" required>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="student-class" class="block text-sm font-medium text-gray-700 mb-1">Class</label>
+                                <input type="text" id="student-class" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" placeholder="e.g. 10" required>
+                            </div>
+                            <div>
+                                <label for="student-section" class="block text-sm font-medium text-gray-700 mb-1">Section</label>
+                                <input type="text" id="student-section" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" placeholder="e.g. A" required>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="student-email" class="block text-sm font-medium text-gray-700 mb-1">Email (Optional)</label>
+                            <input type="email" id="student-email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" placeholder="e.g. student@example.com">
+                        </div>
+                        <div>
+                            <label for="student-phone" class="block text-sm font-medium text-gray-700 mb-1">Phone (Optional)</label>
+                            <input type="tel" id="student-phone" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" placeholder="e.g. 9876543210">
+                        </div>
+                    </form>
+                </div>
+                <div class="p-4 border-t bg-gray-50 flex justify-end space-x-3">
+                    <button class="close-modal px-4 py-2 border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 rounded-lg transition-colors">Cancel</button>
+                    <button id="save-student-btn" class="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors">Save Student</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Subject Modal -->
+        <div id="add-subject-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+            <div class="bg-white rounded-lg shadow-lg w-full max-w-lg mx-4 overflow-hidden">
+                <div class="flex items-center justify-between p-4 border-b">
+                    <h2 class="text-xl font-semibold text-gray-800">Add New Subject</h2>
+                    <button class="close-modal text-gray-500 hover:text-gray-700">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+                <div class="p-6">
+                    <form id="add-subject-form" class="space-y-4">
+                        <div>
+                            <label for="subject-code" class="block text-sm font-medium text-gray-700 mb-1">Subject Code</label>
+                            <input type="text" id="subject-code" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" placeholder="e.g. MATH101" required>
+                        </div>
+                        <div>
+                            <label for="subject-name" class="block text-sm font-medium text-gray-700 mb-1">Subject Name</label>
+                            <input type="text" id="subject-name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" placeholder="e.g. Mathematics" required>
+                        </div>
+                        <div>
+                            <label for="subject-instructor" class="block text-sm font-medium text-gray-700 mb-1">Instructor</label>
+                            <input type="text" id="subject-instructor" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" placeholder="e.g. Prof. Smith" required>
+                        </div>
+                        <div>
+                            <label for="subject-class" class="block text-sm font-medium text-gray-700 mb-1">Class/Section</label>
+                            <input type="text" id="subject-class" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" placeholder="e.g. 10A" required>
+                        </div>
+                        <div>
+                            <label for="subject-description" class="block text-sm font-medium text-gray-700 mb-1">Description (Optional)</label>
+                            <textarea id="subject-description" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" placeholder="Brief description of the subject..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="p-4 border-t bg-gray-50 flex justify-end space-x-3">
+                    <button class="close-modal px-4 py-2 border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 rounded-lg transition-colors">Cancel</button>
+                    <button id="save-subject-btn" class="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors">Save Subject</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Add Schedule Modal -->
+        <div id="add-schedule-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+            <div class="bg-white rounded-lg shadow-lg w-full max-w-lg mx-4 overflow-hidden">
+                <div class="flex items-center justify-between p-4 border-b">
+                    <h2 class="text-xl font-semibold text-gray-800">Add Schedule Entry</h2>
+                    <button class="close-modal text-gray-500 hover:text-gray-700">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+                <div class="p-6">
+                    <form id="add-schedule-form" class="space-y-4">
+                        <div>
+                            <label for="schedule-class" class="block text-sm font-medium text-gray-700 mb-1">Class/Section</label>
+                            <select id="schedule-class" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" required>
+                                <option value="">Select Class/Section</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="schedule-subject" class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                            <select id="schedule-subject" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" required>
+                                <option value="">Select Subject</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="schedule-day" class="block text-sm font-medium text-gray-700 mb-1">Day</label>
+                            <select id="schedule-day" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" required>
+                                <option value="">Select Day</option>
+                                <option value="Monday">Monday</option>
+                                <option value="Tuesday">Tuesday</option>
+                                <option value="Wednesday">Wednesday</option>
+                                <option value="Thursday">Thursday</option>
+                                <option value="Friday">Friday</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="schedule-start-time" class="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
+                                <input type="time" id="schedule-start-time" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" required>
+                            </div>
+                            <div>
+                                <label for="schedule-end-time" class="block text-sm font-medium text-gray-700 mb-1">End Time</label>
+                                <input type="time" id="schedule-end-time" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" required>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="p-4 border-t bg-gray-50 flex justify-end space-x-3">
+                    <button class="close-modal px-4 py-2 border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 rounded-lg transition-colors">Cancel</button>
+                    <button id="save-schedule-btn" class="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors">Save Schedule</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Confirmation Modal -->
+        <div id="confirmation-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+            <div class="bg-white rounded-lg shadow-lg w-full max-w-md mx-4 overflow-hidden">
+                <div class="p-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4" id="confirmation-title">Confirm Action</h2>
+                    <p class="text-gray-600" id="confirmation-message">Are you sure you want to proceed with this action?</p>
+                </div>
+                <div class="p-4 border-t bg-gray-50 flex justify-end space-x-3">
+                    <button id="cancel-confirmation" class="px-4 py-2 border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 rounded-lg transition-colors">Cancel</button>
+                    <button id="confirm-action" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">Confirm</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notification -->
+        <div id="toast-notification" class="fixed bottom-4 right-4 bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-50 hidden max-w-xs">
+            <div class="flex items-center">
+                <div id="toast-icon" class="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full mr-3">
+                    <i class="bi bi-check-circle-fill text-lg"></i>
+                </div>
+                <div class="flex-grow">
+                    <p id="toast-message" class="text-sm font-medium text-gray-800">Action completed successfully</p>
+                </div>
+                <button id="close-toast" class="ml-4 text-gray-400 hover:text-gray-600">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-white border-t border-gray-200 py-4">
+            <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center text-sm text-gray-600">
+                <p>&copy; 2023 AttendX - Attendance Management System</p>
+                <div class="mt-2 md:mt-0 flex space-x-4">
+                    <a href="#" class="hover:text-primary transition-colors">Help</a>
+                    <a href="#" class="hover:text-primary transition-colors">Privacy</a>
+                    <a href="#" class="hover:text-primary transition-colors">Terms</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // App State
+        const state = {
+            students: [],
+            subjects: [],
+            schedules: [],
+            attendance: {},
+            currentSection: 'dashboard-section',
+            classes: new Set(),
+        };
+
+        // DOM Elements
+        const elements = {
+            mobileMenuButton: document.getElementById('mobile-menu-button'),
+            mobileMenu: document.getElementById('mobile-menu'),
+            sections: document.querySelectorAll('main > section'),
+            navLinks: {
+                dashboard: document.getElementById('dashboard-link'),
+                students: document.getElementById('students-link'),
+                subjects: document.getElementById('subjects-link'),
+                timetable: document.getElementById('timetable-link'),
+                reports: document.getElementById('reports-link'),
+                mobileDashboard: document.getElementById('mobile-dashboard-link'),
+                mobileStudents: document.getElementById('mobile-students-link'),
+                mobileSubjects: document.getElementById('mobile-subjects-link'),
+                mobileTimetable: document.getElementById('mobile-timetable-link'),
+                mobileReports: document.getElementById('mobile-reports-link'),
+            },
+            quickActions: {
+                takeAttendance: document.getElementById('quick-take-attendance'),
+                addStudent: document.getElementById('quick-add-student'),
+                addSubject: document.getElementById('quick-add-subject'),
+                viewReport: document.getElementById('quick-view-report'),
+            },
+            emptyActions: {
+                addStudent: document.getElementById('empty-add-student-btn'),
+                addSubject: document.getElementById('empty-add-subject-btn'),
+            },
+            modals: {
+                addStudent: document.getElementById('add-student-modal'),
+                addSubject: document.getElementById('add-subject-modal'),
+                addSchedule: document.getElementById('add-schedule-modal'),
+                confirmation: document.getElementById('confirmation-modal'),
+                toastNotification: document.getElementById('toast-notification'),
+            },
+            addBtns: {
+                student: document.getElementById('add-student-btn'),
+                subject: document.getElementById('add-subject-btn'),
+                schedule: document.getElementById('add-schedule-btn'),
+            },
+            saveBtns: {
+                student: document.getElementById('save-student-btn'),
+                subject: document.getElementById('save-subject-btn'),
+                schedule: document.getElementById('save-schedule-btn'),
+                attendance: document.getElementById('save-attendance-btn'),
+            },
+            lists: {
+                students: document.getElementById('students-list'),
+                subjects: document.getElementById('subjects-list'),
+                attendance: document.getElementById('attendance-list'),
+            },
+            closeModalBtns: document.querySelectorAll('.close-modal'),
+            confirmationActions: {
+                cancel: document.getElementById('cancel-confirmation'),
+                confirm: document.getElementById('confirm-action'),
+            },
+            toast: {
+                element: document.getElementById('toast-notification'),
+                message: document.getElementById('toast-message'),
+                icon: document.getElementById('toast-icon'),
+                close: document.getElementById('close-toast'),
+            },
+            currentDate: document.getElementById('current-date'),
+            attendanceDate: document.getElementById('attendance-date'),
+            attendanceDatePicker: document.getElementById('attendance-date-picker'),
+            saveAttendanceContainer: document.getElementById('save-attendance-container'),
+            reportType: document.getElementById('report-type'),
+            reportFilters: {
+                daily: document.getElementById('daily-filter'),
+                subject: document.getElementById('subject-filter'),
+                student: document.getElementById('student-filter'),
+            },
+            generateReportBtn: document.getElementById('generate-report-btn'),
+            reportResults: document.getElementById('report-results'),
+            totalStudentsCounter: document.getElementById('total-students'),
+            totalSubjectsCounter: document.getElementById('total-subjects'),
+        };
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', function() {
+            initApp();
+        });
+
+        function initApp() {
+            // Load any saved data from localStorage
+            loadSavedData();
+            
+            // Set current date
+            const currentDate = new Date();
+            elements.currentDate.textContent = formatDate(currentDate);
+            elements.attendanceDate.textContent = formatDate(currentDate);
+            elements.attendanceDatePicker.valueAsDate = currentDate;
+            
+            // Update counters
+            updateCounters();
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Initialize components
+            initializeComponents();
+
+            // Show toast notification to welcome the user
+            showToast('Welcome to AttendX! Start by adding students and subjects.', 'info');
+        }
+
+        // Load saved data from localStorage
+        function loadSavedData() {
+            try {
+                if (localStorage.getItem('attendx_students')) {
+                    state.students = JSON.parse(localStorage.getItem('attendx_students'));
+                }
+                if (localStorage.getItem('attendx_subjects')) {
+                    state.subjects = JSON.parse(localStorage.getItem('attendx_subjects'));
+                }
+                if (localStorage.getItem('attendx_schedules')) {
+                    state.schedules = JSON.parse(localStorage.getItem('attendx_schedules'));
+                }
+                if (localStorage.getItem('attendx_attendance')) {
+                    state.attendance = JSON.parse(localStorage.getItem('attendx_attendance'));
+                }
+                
+                // Extract unique class names
+                state.students.forEach(student => {
+                    const classSection = `${student.class}${student.section}`;
+                    state.classes.add(classSection);
+                });
+
+                updateClassDropdowns();
+            } catch (error) {
+                console.error('Error loading saved data:', error);
+                // If there's an error, start with fresh state
+                resetState();
+            }
+        }
+
+        // Save state to localStorage
+        function saveState() {
+            try {
+                localStorage.setItem('attendx_students', JSON.stringify(state.students));
+                localStorage.setItem('attendx_subjects', JSON.stringify(state.subjects));
+                localStorage.setItem('attendx_schedules', JSON.stringify(state.schedules));
+                localStorage.setItem('attendx_attendance', JSON.stringify(state.attendance));
+            } catch (error) {
+                console.error('Error saving state:', error);
+                showToast('Failed to save data. Please check your browser storage settings.', 'error');
+            }
+        }
+
+        // Reset state
+        function resetState() {
+            state.students = [];
+            state.subjects = [];
+            state.schedules = [];
+            state.attendance = {};
+            state.classes = new Set();
+            saveState();
+        }
+
+        function setupEventListeners() {
+            // Mobile menu toggle
+            elements.mobileMenuButton.addEventListener('click', toggleMobileMenu);
+            
+            // Navigation links
+            Object.values(elements.navLinks).forEach(link => {
+                if (link) {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const sectionId = link.id.replace('-link', '').replace('mobile-', '');
+                        switchSection(`${sectionId}-section`);
+                        if (elements.mobileMenu.classList.contains('block')) {
+                            toggleMobileMenu();
+                        }
+                    });
+                }
+            });
+            
+            // Quick action buttons
+            elements.quickActions.takeAttendance.addEventListener('click', () => {
+                switchSection('attendance-section');
+            });
+            
+            elements.quickActions.addStudent.addEventListener('click', () => {
+                openModal('addStudent');
+            });
+            
+            elements.quickActions.addSubject.addEventListener('click', () => {
+                openModal('addSubject');
+            });
+            
+            elements.quickActions.viewReport.addEventListener('click', () => {
+                switchSection('reports-section');
+            });
+            
+            // Empty state action buttons
+            if (elements.emptyActions.addStudent) {
+                elements.emptyActions.addStudent.addEventListener('click', () => {
+                    openModal('addStudent');
+                });
+            }
+            
+            if (elements.emptyActions.addSubject) {
+                elements.emptyActions.addSubject.addEventListener('click', () => {
+                    openModal('addSubject');
+                });
+            }
+            
+            // Add buttons
+            elements.addBtns.student.addEventListener('click', () => {
+                openModal('addStudent');
+            });
+            
+            elements.addBtns.subject.addEventListener('click', () => {
+                openModal('addSubject');
+            });
+            
+            elements.addBtns.schedule.addEventListener('click', () => {
+                openModal('addSchedule');
+            });
+            
+            // Save buttons
+            elements.saveBtns.student.addEventListener('click', addStudent);
+            elements.saveBtns.subject.addEventListener('click', addSubject);
+            elements.saveBtns.schedule.addEventListener('click', addSchedule);
+            if (elements.saveBtns.attendance) {
+                elements.saveBtns.attendance.addEventListener('click', saveAttendance);
+            }
+            
+            // Close modal buttons
+            elements.closeModalBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    closeAllModals();
+                });
+            });
+            
+            // Confirmation modal actions
+            elements.confirmationActions.cancel.addEventListener('click', () => {
+                closeModal('confirmation');
+            });
+            
+            // Toast close button
+            elements.toast.close.addEventListener('click', () => {
+                elements.toast.element.classList.add('hidden');
+            });
+
+            // Attendance date picker
+            elements.attendanceDatePicker.addEventListener('change', function() {
+                const selectedDate = new Date(this.value);
+                elements.attendanceDate.textContent = formatDate(selectedDate);
+                updateAttendanceDisplay();
+            });
+
+            // Report type selector
+            elements.reportType.addEventListener('change', function() {
+                const reportType = this.value;
+                Object.keys(elements.reportFilters).forEach(filter => {
+                    elements.reportFilters[filter].classList.add('hidden');
+                });
+                elements.reportFilters[reportType].classList.remove('hidden');
+                elements.reportResults.classList.add('hidden');
+            });
+
+            // Generate report button
+            elements.generateReportBtn.addEventListener('click', generateReport);
+
+            // Search functionality for students
+            document.getElementById('search-students').addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const listItems = elements.lists.students.querySelectorAll('tr:not(.bg-gray-50)');
+                
+                listItems.forEach(item => {
+                    const studentName = item.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                    const studentId = item.querySelector('td:nth-child(1)').textContent.toLowerCase();
+                    const classSection = item.querySelector('td:nth-child(3)').textContent.toLowerCase();
+                    
+                    if (studentName.includes(searchTerm) || studentId.includes(searchTerm) || classSection.includes(searchTerm)) {
+                        item.classList.remove('hidden');
+                    } else {
+                        item.classList.add('hidden');
+                    }
+                });
+            });
+
+            // Search functionality for subjects
+            document.getElementById('search-subjects').addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const listItems = elements.lists.subjects.querySelectorAll('tr:not(.bg-gray-50)');
+                
+                listItems.forEach(item => {
+                    const subjectCode = item.querySelector('td:nth-child(1)').textContent.toLowerCase();
+                    const subjectName = item.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                    const instructor = item.querySelector('td:nth-child(3)').textContent.toLowerCase();
+                    
+                    if (subjectCode.includes(searchTerm) || subjectName.includes(searchTerm) || instructor.includes(searchTerm)) {
+                        item.classList.remove('hidden');
+                    } else {
+                        item.classList.add('hidden');
+                    }
+                });
+            });
+        }
+
+        function initializeComponents() {
+            // Initialize lists
+            renderStudentsList();
+            renderSubjectsList();
+            
+            // Initialize dropdowns
+            updateClassDropdowns();
+            updateSubjectDropdowns();
+            
+            // Initialize attendance section
+            document.getElementById('attendance-class').addEventListener('change', updateAttendanceDisplay);
+            document.getElementById('attendance-subject').addEventListener('change', updateAttendanceDisplay);
+            
+            // Initialize report dropdowns
+            document.getElementById('report-class').addEventListener('change', function() {
+                updateStudentDropdowns(this.value, 'student-report-student');
+            });
+
+            document.getElementById('student-report-class').addEventListener('change', function() {
+                updateStudentDropdowns(this.value, 'student-report-student');
+            });
+        }
+
+        function toggleMobileMenu() {
+            elements.mobileMenu.classList.toggle('hidden');
+            elements.mobileMenu.classList.toggle('block');
+        }
+
+        function switchSection(sectionId) {
+            // Hide all sections
+            elements.sections.forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show the selected section
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.classList.remove('hidden');
+                state.currentSection = sectionId;
+                
+                // Update navigation links
+                const activeLinkId = sectionId.replace('-section', '-link');
+                const mobileActiveLinkId = 'mobile-' + activeLinkId;
+                
+                // Remove active class from all links
+                Object.values(elements.navLinks).forEach(link => {
+                    if (link) {
+                        link.classList.remove('text-primary', 'font-semibold');
+                        link.classList.add('text-gray-700');
+                    }
+                });
+                
+                // Add active class to current link
+                if (elements.navLinks[sectionId.replace('-section', '')]) {
+                    elements.navLinks[sectionId.replace('-section', '')].classList.add('text-primary', 'font-semibold');
+                    elements.navLinks[sectionId.replace('-section', '')].classList.remove('text-gray-700');
+                }
+                
+                if (document.getElementById(mobileActiveLinkId)) {
+                    document.getElementById(mobileActiveLinkId).classList.add('text-primary', 'font-semibold');
+                    document.getElementById(mobileActiveLinkId).classList.remove('text-gray-700');
+                }
+                
+                // Special initialization for specific sections
+                if (sectionId === 'attendance-section') {
+                    const today = new Date();
+                    elements.attendanceDatePicker.valueAsDate = today;
+                    elements.attendanceDate.textContent = formatDate(today);
+                    updateAttendanceDisplay();
+                }
+            }
+        }
+
+        function openModal(modalName) {
+            if (elements.modals[modalName]) {
+                elements.modals[modalName].classList.remove('hidden');
+                elements.modals[modalName].classList.add('flex');
+                
+                // Clear form fields
+                if (modalName === 'addStudent') {
+                    document.getElementById('add-student-form').reset();
+                    // Auto-generate student ID
+                    const newId = `S${(state.students.length + 1).toString().padStart(3, '0')}`;
+                    document.getElementById('student-id').value = newId;
+                } 
+                else if (modalName === 'addSubject') {
+                    document.getElementById('add-subject-form').reset();
+                    // Auto-generate subject code
+                    const newCode = `SUB${(state.subjects.length + 1).toString().padStart(3, '0')}`;
+                    document.getElementById('subject-code').value = newCode;
+                }
+                else if (modalName === 'addSchedule') {
+                    document.getElementById('add-schedule-form').reset();
+                    
+                    // Populate class and subject dropdowns
+                    const classSelect = document.getElementById('schedule-class');
+                    classSelect.innerHTML = '<option value="">Select Class/Section</option>';
+                    
+                    Array.from(state.classes).forEach(cls => {
+                        const option = document.createElement('option');
+                        option.value = cls;
+                        option.textContent = cls;
+                        classSelect.appendChild(option);
+                    });
+                    
+                    const subjectSelect = document.getElementById('schedule-subject');
+                    subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+                    
+                    state.subjects.forEach(subject => {
+                        const option = document.createElement('option');
+                        option.value = subject.code;
+                        option.textContent = `${subject.code} - ${subject.name}`;
+                        subjectSelect.appendChild(option);
+                    });
+                }
+            }
+        }
+
+        function closeModal(modalName) {
+            if (elements.modals[modalName]) {
+                elements.modals[modalName].classList.add('hidden');
+                elements.modals[modalName].classList.remove('flex');
+            }
+        }
+
+        function closeAllModals() {
+            Object.keys(elements.modals).forEach(modalName => {
+                closeModal(modalName);
+            });
+        }
+
+        function showConfirmation(title, message, callback) {
+            // Set confirmation modal content
+            document.getElementById('confirmation-title').textContent = title;
+            document.getElementById('confirmation-message').textContent = message;
+            
+            // Set confirm action callback
+            elements.confirmationActions.confirm.onclick = callback;
+            
+            // Open confirmation modal
+            openModal('confirmation');
+        }
+
+        function showToast(message, type = 'success', duration = 3000) {
+            // Set toast message and type
+            elements.toast.message.textContent = message;
+            
+            // Set icon and color based on type
+            if (type === 'success') {
+                elements.toast.icon.className = 'flex-shrink-0 w-8 h-8 flex items-center justify-center bg-green-100 text-green-500 rounded-full mr-3';
+                elements.toast.icon.innerHTML = '<i class="bi bi-check-circle-fill"></i>';
+            } else if (type === 'error') {
+                elements.toast.icon.className = 'flex-shrink-0 w-8 h-8 flex items-center justify-center bg-red-100 text-red-500 rounded-full mr-3';
+                elements.toast.icon.innerHTML = '<i class="bi bi-x-circle-fill"></i>';
+            } else if (type === 'info') {
+                elements.toast.icon.className = 'flex-shrink-0 w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-500 rounded-full mr-3';
+                elements.toast.icon.innerHTML = '<i class="bi bi-info-circle-fill"></i>';
+            } else if (type === 'warning') {
+                elements.toast.icon.className = 'flex-shrink-0 w-8 h-8 flex items-center justify-center bg-yellow-100 text-yellow-500 rounded-full mr-3';
+                elements.toast.icon.innerHTML = '<i class="bi bi-exclamation-circle-fill"></i>';
+            }
+            
+            // Show toast
+            elements.toast.element.classList.remove('hidden');
+            elements.toast.element.classList.add('flex');
+            
+            // Auto hide toast after duration
+            clearTimeout(window.toastTimeout);
+            window.toastTimeout = setTimeout(() => {
+                elements.toast.element.classList.add('hidden');
+                elements.toast.element.classList.remove('flex');
+            }, duration);
+        }
+
+        // Students Management
+        function addStudent() {
+            const id = document.getElementById('student-id').value.trim();
+            const name = document.getElementById('student-name').value.trim();
+            const studentClass = document.getElementById('student-class').value.trim();
+            const section = document.getElementById('student-section').value.trim();
+            const email = document.getElementById('student-email').value.trim();
+            const phone = document.getElementById('student-phone').value.trim();
+            
+            if (!id || !name || !studentClass || !section) {
+                showToast('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            // Check if ID already exists
+            if (state.students.some(student => student.id === id)) {
+                showToast('Student ID already exists', 'error');
+                return;
+            }
+            
+            const newStudent = {
+                id,
+                name,
+                class: studentClass,
+                section,
+                email,
+                phone,
+                createdAt: new Date().toISOString()
+            };
+            
+            state.students.push(newStudent);
+            
+            // Update class list
+            const classSection = `${studentClass}${section}`;
+            if (!state.classes.has(classSection)) {
+                state.classes.add(classSection);
+                updateClassDropdowns();
+            }
+            
+            // Save state
+            saveState();
+            
+            // Update UI
+            renderStudentsList();
+            updateCounters();
+            
+            // Close modal and show success message
+            closeModal('addStudent');
+            showToast('Student added successfully');
+
+            // Add empty activity log
+            addActivityLog(`Added student: ${name} (${id})`);
+        }
+
+        function updateStudentsList() {
+            renderStudentsList();
+        }
+
+        function renderStudentsList() {
+            const studentsList = elements.lists.students;
+            
+            if (state.students.length === 0) {
+                studentsList.innerHTML = `
+                    <tr class="bg-gray-50">
+                        <td colspan="4" class="px-6 py-12 text-center text-gray-500">
+                            <i class="bi bi-people text-4xl mb-3 block"></i>
+                            <p>No students added yet</p>
+                            <button id="empty-add-student-btn" class="mt-3 px-4 py-2 bg-primary hover:bg-primary-dark text-white text-sm rounded-lg transition-colors inline-flex items-center">
+                                <i class="bi bi-plus-circle mr-2"></i> Add Your First Student
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                
+                // Re-add event listener
+                const emptyAddStudentBtn = document.getElementById('empty-add-student-btn');
+                if (emptyAddStudentBtn) {
+                    emptyAddStudentBtn.addEventListener('click', () => {
+                        openModal('addStudent');
+                    });
+                }
+                
+                return;
+            }
+            
+            let html = '';
+            
+            state.students.forEach(student => {
+                html += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4">${student.id}</td>
+                        <td class="px-6 py-4">${student.name}</td>
+                        <td class="px-6 py-4">${student.class}${student.section}</td>
+                        <td class="px-6 py-4 text-right space-x-2">
+                            <button class="edit-student text-blue-600 hover:text-blue-800" data-id="${student.id}">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="delete-student text-red-600 hover:text-red-800" data-id="${student.id}">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            studentsList.innerHTML = html;
+            
+            // Add event listeners for edit and delete buttons
+            document.querySelectorAll('.edit-student').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const studentId = btn.getAttribute('data-id');
+                    editStudent(studentId);
+                });
+            });
+            
+            document.querySelectorAll('.delete-student').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const studentId = btn.getAttribute('data-id');
+                    deleteStudent(studentId);
+                });
+            });
+        }
+
+        function editStudent(studentId) {
+            const student = state.students.find(s => s.id === studentId);
+            
+            if (student) {
+                document.getElementById('student-id').value = student.id;
+                document.getElementById('student-name').value = student.name;
+                document.getElementById('student-class').value = student.class;
+                document.getElementById('student-section').value = student.section;
+                document.getElementById('student-email').value = student.email || '';
+                document.getElementById('student-phone').value = student.phone || '';
+                
+                elements.saveBtns.student.textContent = 'Update Student';
+                elements.saveBtns.student.onclick = () => updateStudent(studentId);
+                
+                openModal('addStudent');
+                document.querySelector('#add-student-modal h2').textContent = 'Edit Student';
+            }
+        }
+
+        function updateStudent(studentId) {
+            const id = document.getElementById('student-id').value.trim();
+            const name = document.getElementById('student-name').value.trim();
+            const studentClass = document.getElementById('student-class').value.trim();
+            const section = document.getElementById('student-section').value.trim();
+            const email = document.getElementById('student-email').value.trim();
+            const phone = document.getElementById('student-phone').value.trim();
+            
+            if (!id || !name || !studentClass || !section) {
+                showToast('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            // Check if ID already exists and is not the current student
+            if (id !== studentId && state.students.some(student => student.id === id)) {
+                showToast('Student ID already exists', 'error');
+                return;
+            }
+            
+            const index = state.students.findIndex(s => s.id === studentId);
+            
+            if (index !== -1) {
+                const oldClass = `${state.students[index].class}${state.students[index].section}`;
+                const newClass = `${studentClass}${section}`;
+                
+                state.students[index] = {
+                    ...state.students[index],
+                    id,
+                    name,
+                    class: studentClass,
+                    section,
+                    email,
+                    phone,
+                    updatedAt: new Date().toISOString()
+                };
+                
+                // Update class list if needed
+                if (oldClass !== newClass) {
+                    updateClassList();
+                }
+                
+                // Save state
+                saveState();
+                
+                // Update UI
+                renderStudentsList();
+                
+                // Reset form and button
+                document.getElementById('add-student-form').reset();
+                elements.saveBtns.student.textContent = 'Save Student';
+                elements.saveBtns.student.onclick = addStudent;
+                
+                // Close modal and show success message
+                closeModal('addStudent');
+                document.querySelector('#add-student-modal h2').textContent = 'Add New Student';
+                showToast('Student updated successfully');
+
+                // Add activity log
+                addActivityLog(`Updated student: ${name} (${id})`);
+            }
+        }
+
+        function deleteStudent(studentId) {
+            const student = state.students.find(s => s.id === studentId);
+            
+            if (student) {
+                showConfirmation(
+                    'Delete Student',
+                    `Are you sure you want to delete ${student.name}? This action cannot be undone.`,
+                    () => {
+                        const index = state.students.findIndex(s => s.id === studentId);
+                        
+                        if (index !== -1) {
+                            const deletedStudent = state.students.splice(index, 1)[0];
+                            
+                            // Update class list
+                            updateClassList();
+                            
+                            // Save state
+                            saveState();
+                            
+                            // Update UI
+                            renderStudentsList();
+                            updateCounters();
+                            
+                            // Close confirmation modal
+                            closeModal('confirmation');
+                            showToast('Student deleted successfully');
+
+                            // Add activity log
+                            addActivityLog(`Deleted student: ${deletedStudent.name} (${deletedStudent.id})`);
+                        }
+                    }
+                );
+            }
+        }
+
+        // Subjects Management
+        function addSubject() {
+            const code = document.getElementById('subject-code').value.trim();
+            const name = document.getElementById('subject-name').value.trim();
+            const instructor = document.getElementById('subject-instructor').value.trim();
+            const classSection = document.getElementById('subject-class').value.trim();
+            const description = document.getElementById('subject-description').value.trim();
+            
+            if (!code || !name || !instructor || !classSection) {
+                showToast('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            // Check if code already exists
+            if (state.subjects.some(subject => subject.code === code)) {
+                showToast('Subject code already exists', 'error');
+                return;
+            }
+            
+            const newSubject = {
+                code,
+                name,
+                instructor,
+                classSection,
+                description,
+                createdAt: new Date().toISOString()
+            };
+            
+            state.subjects.push(newSubject);
+            
+            // Save state
+            saveState();
+            
+            // Update UI
+            renderSubjectsList();
+            updateCounters();
+            updateSubjectDropdowns();
+            
+            // Close modal and show success message
+            closeModal('addSubject');
+            showToast('Subject added successfully');
+
+            // Add activity log
+            addActivityLog(`Added subject: ${name} (${code})`);
+        }
+
+        function renderSubjectsList() {
+            const subjectsList = elements.lists.subjects;
+            
+            if (state.subjects.length === 0) {
+                subjectsList.innerHTML = `
+                    <tr class="bg-gray-50">
+                        <td colspan="4" class="px-6 py-12 text-center text-gray-500">
+                            <i class="bi bi-book text-4xl mb-3 block"></i>
+                            <p>No subjects added yet</p>
+                            <button id="empty-add-subject-btn" class="mt-3 px-4 py-2 bg-primary hover:bg-primary-dark text-white text-sm rounded-lg transition-colors inline-flex items-center">
+                                <i class="bi bi-plus-circle mr-2"></i> Add Your First Subject
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                
+                // Re-add event listener
+                const emptyAddSubjectBtn = document.getElementById('empty-add-subject-btn');
+                if (emptyAddSubjectBtn) {
+                    emptyAddSubjectBtn.addEventListener('click', () => {
+                        openModal('addSubject');
+                    });
+                }
+                
+                return;
+            }
+            
+            let html = '';
+            
+            state.subjects.forEach(subject => {
+                html += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4">${subject.code}</td>
+                        <td class="px-6 py-4">${subject.name}</td>
+                        <td class="px-6 py-4">${subject.instructor}</td>
+                        <td class="px-6 py-4 text-right space-x-2">
+                            <button class="edit-subject text-blue-600 hover:text-blue-800" data-code="${subject.code}">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="delete-subject text-red-600 hover:text-red-800" data-code="${subject.code}">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            subjectsList.innerHTML = html;
+            
+            // Add event listeners for edit and delete buttons
+            document.querySelectorAll('.edit-subject').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const subjectCode = btn.getAttribute('data-code');
+                    editSubject(subjectCode);
+                });
+            });
+            
+            document.querySelectorAll('.delete-subject').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const subjectCode = btn.getAttribute('data-code');
+                    deleteSubject(subjectCode);
+                });
+            });
+        }
+
+        function editSubject(subjectCode) {
+            const subject = state.subjects.find(s => s.code === subjectCode);
+            
+            if (subject) {
+                document.getElementById('subject-code').value = subject.code;
+                document.getElementById('subject-name').value = subject.name;
+                document.getElementById('subject-instructor').value = subject.instructor;
+                document.getElementById('subject-class').value = subject.classSection;
+                document.getElementById('subject-description').value = subject.description || '';
+                
+                elements.saveBtns.subject.textContent = 'Update Subject';
+                elements.saveBtns.subject.onclick = () => updateSubject(subjectCode);
+                
+                openModal('addSubject');
+                document.querySelector('#add-subject-modal h2').textContent = 'Edit Subject';
+            }
+        }
+
+        function updateSubject(subjectCode) {
+            const code = document.getElementById('subject-code').value.trim();
+            const name = document.getElementById('subject-name').value.trim();
+            const instructor = document.getElementById('subject-instructor').value.trim();
+            const classSection = document.getElementById('subject-class').value.trim();
+            const description = document.getElementById('subject-description').value.trim();
+            
+            if (!code || !name || !instructor || !classSection) {
+                showToast('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            // Check if code already exists and is not the current subject
+            if (code !== subjectCode && state.subjects.some(subject => subject.code === code)) {
+                showToast('Subject code already exists', 'error');
+                return;
+            }
+            
+            const index = state.subjects.findIndex(s => s.code === subjectCode);
+            
+            if (index !== -1) {
+                state.subjects[index] = {
+                    ...state.subjects[index],
+                    code,
+                    name,
+                    instructor,
+                    classSection,
+                    description,
+                    updatedAt: new Date().toISOString()
+                };
+                
+                // Save state
+                saveState();
+                
+                // Update UI
+                renderSubjectsList();
+                updateSubjectDropdowns();
+                
+                // Reset form and button
+                document.getElementById('add-subject-form').reset();
+                elements.saveBtns.subject.textContent = 'Save Subject';
+                elements.saveBtns.subject.onclick = addSubject;
+                
+                // Close modal and show success message
+                closeModal('addSubject');
+                document.querySelector('#add-subject-modal h2').textContent = 'Add New Subject';
+                showToast('Subject updated successfully');
+
+                // Add activity log
+                addActivityLog(`Updated subject: ${name} (${code})`);
+            }
+        }
+
+        function deleteSubject(subjectCode) {
+            const subject = state.subjects.find(s => s.code === subjectCode);
+            
+            if (subject) {
+                showConfirmation(
+                    'Delete Subject',
+                    `Are you sure you want to delete ${subject.name}? This action cannot be undone.`,
+                    () => {
+                        const index = state.subjects.findIndex(s => s.code === subjectCode);
+                        
+                        if (index !== -1) {
+                            const deletedSubject = state.subjects.splice(index, 1)[0];
+                            
+                            // Remove any schedules related to this subject
+                            state.schedules = state.schedules.filter(schedule => schedule.subjectCode !== subjectCode);
+                            
+                            // Save state
+                            saveState();
+                            
+                            // Update UI
+                            renderSubjectsList();
+                            updateCounters();
+                            updateSubjectDropdowns();
+                            
+                            // Close confirmation modal
+                            closeModal('confirmation');
+                            showToast('Subject deleted successfully');
+
+                            // Add activity log
+                            addActivityLog(`Deleted subject: ${deletedSubject.name} (${deletedSubject.code})`);
+                        }
+                    }
+                );
+            }
+        }
+
+        // Timetable Management
+        function addSchedule() {
+            const classSection = document.getElementById('schedule-class').value;
+            const subjectCode = document.getElementById('schedule-subject').value;
+            const day = document.getElementById('schedule-day').value;
+            const startTime = document.getElementById('schedule-start-time').value;
+            const endTime = document.getElementById('schedule-end-time').value;
+            
+            if (!classSection || !subjectCode || !day || !startTime || !endTime) {
+                showToast('Please fill in all fields', 'error');
+                return;
+            }
+            
+            // Check for overlapping schedules
+            const isOverlapping = state.schedules.some(schedule => {
+                if (schedule.classSection === classSection && schedule.day === day) {
+                    const existingStart = convertTimeToMinutes(schedule.startTime);
+                    const existingEnd = convertTimeToMinutes(schedule.endTime);
+                    const newStart = convertTimeToMinutes(startTime);
+                    const newEnd = convertTimeToMinutes(endTime);
+                    
+                    return (newStart >= existingStart && newStart < existingEnd) || 
+                        (newEnd > existingStart && newEnd <= existingEnd) ||
+                        (newStart <= existingStart && newEnd >= existingEnd);
+                }
+                return false;
+            });
+            
+            if (isOverlapping) {
+                showToast('Time slot overlaps with an existing schedule', 'error');
+                return;
+            }
+            
+            const subjectName = state.subjects.find(subject => subject.code === subjectCode)?.name || '';
+            
+            const newSchedule = {
+                id: generateUniqueId(),
+                classSection,
+                subjectCode,
+                subjectName,
+                day,
+                startTime,
+                endTime,
+                createdAt: new Date().toISOString()
+            };
+            
+            state.schedules.push(newSchedule);
+            
+            // Save state
+            saveState();
+            
+            // Update UI
+            renderTimetable();
+            
+            // Close modal and show success message
+            closeModal('addSchedule');
+            showToast('Schedule added successfully');
+
+            // Add activity log
+            addActivityLog(`Added schedule: ${subjectName} on ${day} (${startTime}-${endTime})`);
+        }
+
+        function renderTimetable() {
+            const classSelect = document.getElementById('timetable-class-select');
+            const timetableBody = document.getElementById('timetable-body');
+            
+            // Update class dropdown
+            classSelect.innerHTML = '<option value="">Select Class/Section</option>';
+            Array.from(state.classes).forEach(cls => {
+                const option = document.createElement('option');
+                option.value = cls;
+                option.textContent = cls;
+                classSelect.appendChild(option);
+            });
+            
+            // Handle empty state
+            if (state.schedules.length === 0) {
+                timetableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="border border-gray-200 p-12 text-center text-gray-500">
+                            <i class="bi bi-calendar3 text-4xl mb-3 block"></i>
+                            <p>No timetable entries yet</p>
+                            <p class="text-sm mt-2">Add students, subjects, and schedules to view the timetable</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // Filter schedules by selected class
+            const selectedClass = classSelect.value;
+            let filteredSchedules = state.schedules;
+            
+            if (selectedClass) {
+                filteredSchedules = state.schedules.filter(schedule => schedule.classSection === selectedClass);
+            }
+            
+            if (filteredSchedules.length === 0) {
+                timetableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="border border-gray-200 p-12 text-center text-gray-500">
+                            <i class="bi bi-calendar3 text-4xl mb-3 block"></i>
+                            <p>No timetable entries for this class</p>
+                            <p class="text-sm mt-2">Select a different class or add schedules for this class</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // Get unique time slots
+            const timeSlots = [];
+            filteredSchedules.forEach(schedule => {
+                if (!timeSlots.some(slot => slot.start === schedule.startTime && slot.end === schedule.endTime)) {
+                    timeSlots.push({
+                        start: schedule.startTime,
+                        end: schedule.endTime
+                    });
+                }
+            });
+            
+            // Sort time slots
+            timeSlots.sort((a, b) => {
+                const aStart = convertTimeToMinutes(a.start);
+                const bStart = convertTimeToMinutes(b.start);
+                return aStart - bStart;
+            });
+            
+            // Generate timetable rows
+            let html = '';
+            
+            timeSlots.forEach(slot => {
+                html += `
+                    <tr>
+                        <td class="border border-gray-200 p-3 text-sm bg-gray-50 font-medium">
+                            ${formatTime(slot.start)} - ${formatTime(slot.end)}
+                        </td>
+                `;
+                
+                const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+                
+                days.forEach(day => {
+                    const schedule = filteredSchedules.find(s => 
+                        s.day === day && 
+                        s.startTime === slot.start && 
+                        s.endTime === slot.end
+                    );
+                    
+                    if (schedule) {
+                        html += `
+                            <td class="border border-gray-200 p-3 text-sm bg-blue-50">
+                                <div class="font-medium">${schedule.subjectName}</div>
+                                <div class="text-xs text-gray-500 mt-1">${schedule.subjectCode}</div>
+                                <div class="flex justify-between items-center mt-2">
+                                    <span class="text-xs text-gray-500">${schedule.classSection}</span>
+                                    <button class="delete-schedule text-red-500 hover:text-red-700 text-xs" data-id="${schedule.id}">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        `;
+                    } else {
+                        html += `
+                            <td class="border border-gray-200 p-3 text-sm text-gray-400 text-center">-</td>
+                        `;
+                    }
+                });
+                
+                html += '</tr>';
+            });
+            
+            timetableBody.innerHTML = html;
+            
+            // Add event listeners for delete buttons
+            document.querySelectorAll('.delete-schedule').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const scheduleId = btn.getAttribute('data-id');
+                    deleteSchedule(scheduleId);
+                });
+            });
+            
+            // Add event listener for class select
+            classSelect.addEventListener('change', renderTimetable);
+        }
+
+        function deleteSchedule(scheduleId) {
+            const schedule = state.schedules.find(s => s.id === scheduleId);
+            
+            if (schedule) {
+                showConfirmation(
+                    'Delete Schedule',
+                    `Are you sure you want to delete the ${schedule.subjectName} schedule on ${schedule.day}?`,
+                    () => {
+                        const index = state.schedules.findIndex(s => s.id === scheduleId);
+                        
+                        if (index !== -1) {
+                            state.schedules.splice(index, 1);
+                            
+                            // Save state
+                            saveState();
+                            
+                            // Update UI
+                            renderTimetable();
+                            
+                            // Close confirmation modal
+                            closeModal('confirmation');
+                            showToast('Schedule deleted successfully');
+
+                            // Add activity log
+                            addActivityLog(`Deleted schedule: ${schedule.subjectName} on ${schedule.day}`);
+                        }
+                    }
+                );
+            }
+        }
+
+        // Attendance Management
+        function updateAttendanceDisplay() {
+            const selectedClass = document.getElementById('attendance-class').value;
+            const selectedSubject = document.getElementById('attendance-subject').value;
+            const selectedDate = elements.attendanceDatePicker.value;
+            
+            if (!selectedClass || !selectedSubject || !selectedDate) {
+                elements.lists.attendance.innerHTML = `
+                    <tr class="bg-gray-50">
+                        <td colspan="4" class="px-6 py-12 text-center text-gray-500">
+                            <i class="bi bi-calendar-check text-4xl mb-3 block"></i>
+                            <p>No data available</p>
+                            <p class="text-sm mt-2">Please select a class and subject</p>
+                        </td>
+                    </tr>
+                `;
+                elements.saveAttendanceContainer.classList.add('hidden');
+                return;
+            }
+            
+            // Filter students by class
+            const studentsInClass = state.students.filter(
+                student => `${student.class}${student.section}` === selectedClass
+            ).sort((a, b) => a.id.localeCompare(b.id));
+            
+            if (studentsInClass.length === 0) {
+                elements.lists.attendance.innerHTML = `
+                    <tr class="bg-gray-50">
+                        <td colspan="4" class="px-6 py-12 text-center text-gray-500">
+                            <i class="bi bi-people text-4xl mb-3 block"></i>
+                            <p>No students found in this class</p>
+                            <p class="text-sm mt-2">Add students to this class first</p>
+                        </td>
+                    </tr>
+                `;
+                elements.saveAttendanceContainer.classList.add('hidden');
+                return;
+            }
+            
+            // Check if attendance already exists for this date, class, and subject
+            const attendanceKey = `${selectedDate}_${selectedClass}_${selectedSubject}`;
+            const existingAttendance = state.attendance[attendanceKey] || [];
+            
+            let html = '';
+            
+            studentsInClass.forEach(student => {
+                const attendanceRecord = existingAttendance.find(record => record.studentId === student.id);
+                const isPresent = attendanceRecord ? attendanceRecord.status === 'present' : true;
+                const remarks = attendanceRecord ? attendanceRecord.remarks : '';
+                
+                html += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4">${student.id}</td>
+                        <td class="px-6 py-4">${student.name}</td>
+                        <td class="px-6 py-4 text-center">
+                            <div class="flex justify-center space-x-4">
+                                <label class="inline-flex items-center cursor-pointer">
+                                    <input type="radio" name="attendance_${student.id}" value="present" class="form-radio h-4 w-4 text-green-600" ${isPresent ? 'checked' : ''}>
+                                    <span class="ml-2 text-green-600">Present</span>
+                                </label>
+                                <label class="inline-flex items-center cursor-pointer">
+                                    <input type="radio" name="attendance_${student.id}" value="absent" class="form-radio h-4 w-4 text-red-600" ${!isPresent ? 'checked' : ''}>
+                                    <span class="ml-2 text-red-600">Absent</span>
+                                </label>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Optional remarks" value="${remarks}" data-student-id="${student.id}">
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            elements.lists.attendance.innerHTML = html;
+            elements.saveAttendanceContainer.classList.remove('hidden');
+        }
+
+        function saveAttendance() {
+            const selectedClass = document.getElementById('attendance-class').value;
+            const selectedSubject = document.getElementById('attendance-subject').value;
+            const selectedDate = elements.attendanceDatePicker.value;
+            
+            if (!selectedClass || !selectedSubject || !selectedDate) {
+                showToast('Please select class, subject, and date', 'error');
+                return;
+            }
+            
+            const attendanceKey = `${selectedDate}_${selectedClass}_${selectedSubject}`;
+            const attendance = [];
+            
+            // Get students in the selected class
+            const studentsInClass = state.students.filter(
+                student => `${student.class}${student.section}` === selectedClass
+            );
+            
+            // Collect attendance data
+            studentsInClass.forEach(student => {
+                const radioInputs = document.getElementsByName(`attendance_${student.id}`);
+                let status = 'present'; // Default status
+                
+                for (const input of radioInputs) {
+                    if (input.checked) {
+                        status = input.value;
+                        break;
+                    }
+                }
+                
+                const remarksInput = document.querySelector(`input[data-student-id="${student.id}"]`);
+                const remarks = remarksInput ? remarksInput.value.trim() : '';
+                
+                attendance.push({
+                    studentId: student.id,
+                    studentName: student.name,
+                    status,
+                    remarks
+                });
+            });
+            
+            // Save attendance data
+            state.attendance[attendanceKey] = attendance;
+            saveState();
+            
+            showToast('Attendance saved successfully');
+
+            // Add activity log
+            const subjectName = state.subjects.find(subject => subject.code === selectedSubject)?.name || selectedSubject;
+            addActivityLog(`Marked attendance for ${subjectName}, Class: ${selectedClass}, Date: ${formatDate(new Date(selectedDate))}`);
+        }
+
+        // Reports Management
+        function generateReport() {
+            const reportType = elements.reportType.value;
+            
+            switch (reportType) {
+                case 'daily':
+                    generateDailyReport();
+                    break;
+                case 'subject':
+                    generateSubjectReport();
+                    break;
+                case 'student':
+                    generateStudentReport();
+                    break;
+                default:
+                    showToast('Invalid report type', 'error');
+            }
+        }
+
+        function generateDailyReport() {
+            const date = document.getElementById('report-date').value;
+            const classSection = document.getElementById('report-class').value;
+            const subject = document.getElementById('report-subject').value;
+            
+            if (!date || !classSection || !subject) {
+                showToast('Please select date, class, and subject for the report', 'error');
+                return;
+            }
+            
+            const attendanceKey = `${date}_${classSection}_${subject}`;
+            const attendanceData = state.attendance[attendanceKey] || [];
+            
+            if (attendanceData.length === 0) {
+                showToast('No attendance data found for the selected criteria', 'warning');
+                elements.reportResults.classList.add('hidden');
+                return;
+            }
+            
+            // Calculate statistics
+            const totalStudents = attendanceData.length;
+            const presentStudents = attendanceData.filter(record => record.status === 'present').length;
+            const absentStudents = totalStudents - presentStudents;
+            const presentPercentage = (presentStudents / totalStudents * 100).toFixed(2);
+            const absentPercentage = (absentStudents / totalStudents * 100).toFixed(2);
+            
+            // Update report title and statistics
+            document.getElementById('report-title').textContent = `Daily Attendance Report - ${formatDate(new Date(date))}`;
+            document.getElementById('report-total-students').textContent = totalStudents;
+            document.getElementById('report-present').textContent = `${presentStudents} (${presentPercentage}%)`;
+            document.getElementById('report-absent').textContent = `${absentStudents} (${absentPercentage}%)`;
+            
+            // Generate report data
+            const reportData = document.getElementById('report-data');
+            const reportHeaders = document.getElementById('report-headers');
+            
+            reportHeaders.innerHTML = `
+                <th class="px-6 py-3 text-left">Roll No</th>
+                <th class="px-6 py-3 text-left">Student Name</th>
+                <th class="px-6 py-3 text-center">Status</th>
+                <th class="px-6 py-3 text-left">Remarks</th>
+            `;
+            
+            let html = '';
+            
+            attendanceData.forEach(record => {
+                const statusClass = record.status === 'present' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+                
+                html += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4">${record.studentId}</td>
+                        <td class="px-6 py-4">${record.studentName}</td>
+                        <td class="px-6 py-4 text-center">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">
+                                ${record.status === 'present' ? 'Present' : 'Absent'}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">${record.remarks || '-'}</td>
+                    </tr>
+                `;
+            });
+            
+            reportData.innerHTML = html;
+            elements.reportResults.classList.remove('hidden');
+
+            // Add activity log
+            const subjectName = state.subjects.find(s => s.code === subject)?.name || subject;
+            addActivityLog(`Generated daily attendance report for ${subjectName}, Class: ${classSection}, Date: ${formatDate(new Date(date))}`);
+        }
+
+        function generateSubjectReport() {
+            const subject = document.getElementById('subject-report-subject').value;
+            const classSection = document.getElementById('subject-report-class').value;
+            const startDate = document.getElementById('subject-start-date').value;
+            const endDate = document.getElementById('subject-end-date').value;
+            
+            if (!subject || !classSection || !startDate || !endDate) {
+                showToast('Please fill in all fields for the report', 'error');
+                return;
+            }
+            
+            // Find all attendance records for this subject and class within date range
+            const attendanceKeys = Object.keys(state.attendance).filter(key => {
+                const [date, cls, subj] = key.split('_');
+                return cls === classSection && subj === subject && date >= startDate && date <= endDate;
+            });
+            
+            if (attendanceKeys.length === 0) {
+                showToast('No attendance data found for the selected criteria', 'warning');
+                elements.reportResults.classList.add('hidden');
+                return;
+            }
+            
+            // Get all student IDs in the class
+            const studentIds = state.students
+                .filter(student => `${student.class}${student.section}` === classSection)
+                .map(student => student.id);
+            
+            // Initialize student attendance data
+            const studentAttendance = {};
+            studentIds.forEach(id => {
+                const student = state.students.find(s => s.id === id);
+                studentAttendance[id] = {
+                    id,
+                    name: student.name,
+                    presentDays: 0,
+                    totalDays: attendanceKeys.length,
+                    dates: {}
+                };
+            });
+            
+            // Collect attendance data
+            attendanceKeys.forEach(key => {
+                const [date] = key.split('_');
+                const records = state.attendance[key];
+                
+                records.forEach(record => {
+                    if (studentAttendance[record.studentId]) {
+                        if (record.status === 'present') {
+                            studentAttendance[record.studentId].presentDays++;
+                        }
+                        
+                        // Store date-specific status
+                        studentAttendance[record.studentId].dates[date] = {
+                            status: record.status,
+                            remarks: record.remarks
+                        };
+                    }
+                });
+            });
+            
+            // Sort dates
+            const sortedDates = attendanceKeys
+                .map(key => key.split('_')[0])
+                .sort((a, b) => new Date(a) - new Date(b));
+            
+            // Update report title and statistics
+            const subjectName = state.subjects.find(s => s.code === subject)?.name || subject;
+            document.getElementById('report-title').textContent = `${subjectName} Attendance Report - ${formatDate(new Date(startDate))} to ${formatDate(new Date(endDate))}`;
+            
+            const totalStudents = Object.keys(studentAttendance).length;
+            document.getElementById('report-total-students').textContent = totalStudents;
+            
+            // Calculate overall attendance statistics
+            let totalPresent = 0;
+            Object.values(studentAttendance).forEach(student => {
+                totalPresent += student.presentDays;
+            });
+            
+            const totalDays = Object.keys(studentAttendance).length * attendanceKeys.length;
+            const presentPercentage = totalDays > 0 ? (totalPresent / totalDays * 100).toFixed(2) : 0;
+            const absentDays = totalDays - totalPresent;
+            const absentPercentage = totalDays > 0 ? (absentDays / totalDays * 100).toFixed(2) : 0;
+            
+            document.getElementById('report-present').textContent = `${totalPresent} (${presentPercentage}%)`;
+            document.getElementById('report-absent').textContent = `${absentDays} (${absentPercentage}%)`;
+            
+            // Generate report headers with dates
+            const reportHeaders = document.getElementById('report-headers');
+            let headerHtml = `
+                <th class="px-6 py-3 text-left">Roll No</th>
+                <th class="px-6 py-3 text-left">Student Name</th>
+            `;
+            
+            sortedDates.forEach(date => {
+                headerHtml += `<th class="px-6 py-3 text-center">${formatDate(new Date(date))}</th>`;
+            });
+            
+            headerHtml += `<th class="px-6 py-3 text-center">Attendance %</th>`;
+            reportHeaders.innerHTML = headerHtml;
+            
+            // Generate report data
+            const reportData = document.getElementById('report-data');
+            let dataHtml = '';
+            
+            Object.values(studentAttendance).forEach(student => {
+                const attendancePercentage = (student.presentDays / student.totalDays * 100).toFixed(2);
+                
+                dataHtml += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4">${student.id}</td>
+                        <td class="px-6 py-4">${student.name}</td>
+                `;
+                
+                sortedDates.forEach(date => {
+                    const status = student.dates[date]?.status || 'N/A';
+                    const statusClass = status === 'present' ? 'bg-green-100 text-green-800' : (status === 'absent' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800');
+                    const statusLabel = status === 'present' ? 'P' : (status === 'absent' ? 'A' : '-');
+                    
+                    dataHtml += `
+                        <td class="px-6 py-4 text-center">
+                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">
+                                ${statusLabel}
+                            </span>
+                        </td>
+                    `;
+                });
+                
+                // Attendance percentage with color
+                let percentageClass = 'text-green-600';
+                if (attendancePercentage < 90) percentageClass = 'text-yellow-600';
+                if (attendancePercentage < 75) percentageClass = 'text-orange-600';
+                if (attendancePercentage < 60) percentageClass = 'text-red-600';
+                
+                dataHtml += `
+                        <td class="px-6 py-4 text-center font-medium ${percentageClass}">${attendancePercentage}%</td>
+                    </tr>
+                `;
+            });
+            
+            reportData.innerHTML = dataHtml;
+            elements.reportResults.classList.remove('hidden');
+
+            // Add activity log
+            addActivityLog(`Generated subject attendance report for ${subjectName}, Class: ${classSection}`);
+        }
+
+        function generateStudentReport() {
+            const classSection = document.getElementById('student-report-class').value;
+            const studentId = document.getElementById('student-report-student').value;
+            const startDate = document.getElementById('student-start-date').value;
+            const endDate = document.getElementById('student-end-date').value;
+            
+            if (!classSection || !studentId || !startDate || !endDate) {
+                showToast('Please fill in all fields for the report', 'error');
+                return;
+            }
+            
+            // Find the student
+            const student = state.students.find(s => s.id === studentId);
+            if (!student) {
+                showToast('Student not found', 'error');
+                return;
+            }
+            
+            // Find all attendance records for this student within date range
+            const attendanceRecords = [];
+            
+            Object.keys(state.attendance).forEach(key => {
+                const [date, cls, subj] = key.split('_');
+                
+                if (cls === classSection && date >= startDate && date <= endDate) {
+                    const records = state.attendance[key];
+                    const studentRecord = records.find(r => r.studentId === studentId);
+                    
+                    if (studentRecord) {
+                        // Find subject name
+                        const subject = state.subjects.find(s => s.code === subj);
+                        
+                        attendanceRecords.push({
+                            date,
+                            subjectCode: subj,
+                            subjectName: subject ? subject.name : subj,
+                            status: studentRecord.status,
+                            remarks: studentRecord.remarks
+                        });
+                    }
+                }
+            });
+            
+            if (attendanceRecords.length === 0) {
+                showToast('No attendance data found for the selected student', 'warning');
+                elements.reportResults.classList.add('hidden');
+                return;
+            }
+            
+            // Sort records by date
+            attendanceRecords.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            // Update report title and statistics
+            document.getElementById('report-title').textContent = `${student.name}'s Attendance Report - ${formatDate(new Date(startDate))} to ${formatDate(new Date(endDate))}`;
+            
+            document.getElementById('report-total-students').textContent = '1';
+            
+            // Calculate attendance statistics
+            const totalRecords = attendanceRecords.length;
+            const presentRecords = attendanceRecords.filter(record => record.status === 'present').length;
+            const absentRecords = totalRecords - presentRecords;
+            const presentPercentage = (presentRecords / totalRecords * 100).toFixed(2);
+            const absentPercentage = (absentRecords / totalRecords * 100).toFixed(2);
+            
+            document.getElementById('report-present').textContent = `${presentRecords} (${presentPercentage}%)`;
+            document.getElementById('report-absent').textContent = `${absentRecords} (${absentPercentage}%)`;
+            
+            // Generate report headers
+            const reportHeaders = document.getElementById('report-headers');
+            reportHeaders.innerHTML = `
+                <th class="px-6 py-3 text-left">Date</th>
+                <th class="px-6 py-3 text-left">Subject</th>
+                <th class="px-6 py-3 text-center">Status</th>
+                <th class="px-6 py-3 text-left">Remarks</th>
+            `;
+            
+            // Generate report data
+            const reportData = document.getElementById('report-data');
+            let html = '';
+            
+            attendanceRecords.forEach(record => {
+                const statusClass = record.status === 'present' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+                
+                html += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4">${formatDate(new Date(record.date))}</td>
+                        <td class="px-6 py-4">${record.subjectName} (${record.subjectCode})</td>
+                        <td class="px-6 py-4 text-center">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">
+                                ${record.status === 'present' ? 'Present' : 'Absent'}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">${record.remarks || '-'}</td>
+                    </tr>
+                `;
+            });
+            
+            reportData.innerHTML = html;
+            elements.reportResults.classList.remove('hidden');
+
+            // Add activity log
+            addActivityLog(`Generated student attendance report for ${student.name} (${student.id})`);
+        }
+
+        // Helper functions
+        function updateClassList() {
+            state.classes.clear();
+            state.students.forEach(student => {
+                const classSection = `${student.class}${student.section}`;
+                state.classes.add(classSection);
+            });
+            updateClassDropdowns();
+        }
+
+        function updateClassDropdowns() {
+            // Update class dropdowns in attendance and reports sections
+            const dropdowns = [
+                document.getElementById('attendance-class'),
+                document.getElementById('report-class'),
+                document.getElementById('student-report-class'),
+                document.getElementById('subject-report-class'),
+                document.getElementById('timetable-class-select')
+            ];
+            
+            dropdowns.forEach(dropdown => {
+                if (dropdown) {
+                    dropdown.innerHTML = '<option value="">Select Class/Section</option>';
+                    
+                    Array.from(state.classes).sort().forEach(cls => {
+                        const option = document.createElement('option');
+                        option.value = cls;
+                        option.textContent = cls;
+                        dropdown.appendChild(option);
+                    });
+                }
+            });
+        }
+
+        function updateSubjectDropdowns() {
+            // Update subject dropdowns in attendance and reports sections
+            const dropdowns = [
+                document.getElementById('attendance-subject'),
+                document.getElementById('report-subject'),
+                document.getElementById('subject-report-subject'),
+            ];
+            
+            dropdowns.forEach(dropdown => {
+                if (dropdown) {
+                    dropdown.innerHTML = '<option value="">Select Subject</option>';
+                    
+                    state.subjects.sort((a, b) => a.name.localeCompare(b.name)).forEach(subject => {
+                        const option = document.createElement('option');
+                        option.value = subject.code;
+                        option.textContent = `${subject.name} (${subject.code})`;
+                        dropdown.appendChild(option);
+                    });
+                }
+            });
+        }
+
+        function updateStudentDropdowns(classSection, dropdownId) {
+            const dropdown = document.getElementById(dropdownId);
+            
+            if (dropdown) {
+                dropdown.innerHTML = '<option value="">Select Student</option>';
+                
+                if (classSection) {
+                    const students = state.students.filter(
+                        student => `${student.class}${student.section}` === classSection
+                    ).sort((a, b) => a.name.localeCompare(b.name));
+                    
+                    students.forEach(student => {
+                        const option = document.createElement('option');
+                        option.value = student.id;
+                        option.textContent = `${student.name} (${student.id})`;
+                        dropdown.appendChild(option);
+                    });
+                }
+            }
+        }
+
+        function updateCounters() {
+            elements.totalStudentsCounter.textContent = state.students.length;
+            elements.totalSubjectsCounter.textContent = state.subjects.length;
+        }
+
+        function formatDate(date) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return date.toLocaleDateString('en-US', options);
+        }
+
+        function formatTime(timeString) {
+            const [hours, minutes] = timeString.split(':');
+            const hour = parseInt(hours);
+            const isPM = hour >= 12;
+            const formattedHour = hour > 12 ? hour - 12 : (hour === 0 ? 12 : hour);
+            return `${formattedHour}:${minutes} ${isPM ? 'PM' : 'AM'}`;
+        }
+
+        function convertTimeToMinutes(timeString) {
+            const [hours, minutes] = timeString.split(':');
+            return parseInt(hours) * 60 + parseInt(minutes);
+        }
+
+        function generateUniqueId() {
+            return Date.now().toString(36) + Math.random().toString(36).substring(2);
+        }
+
+        function addActivityLog(activity) {
+            const recentActivity = document.querySelector('.custom-scrollbar');
+            
+            if (recentActivity) {
+                const newActivity = document.createElement('div');
+                newActivity.className = 'flex items-start space-x-4 p-3 hover:bg-gray-50 rounded-lg transition-colors';
+                
+                // Generate appropriate icon based on activity text
+                let icon = 'bi-activity';
+                let iconBg = 'bg-gray-100';
+                let iconColor = 'text-gray-500';
+                
+                if (activity.includes('Added')) {
+                    icon = 'bi-plus-circle';
+                    iconBg = 'bg-green-100';
+                    iconColor = 'text-green-500';
+                } else if (activity.includes('Deleted')) {
+                    icon = 'bi-trash';
+                    iconBg = 'bg-red-100';
+                    iconColor = 'text-red-500';
+                } else if (activity.includes('Updated')) {
+                    icon = 'bi-pencil';
+                    iconBg = 'bg-blue-100';
+                    iconColor = 'text-blue-500';
+                } else if (activity.includes('Marked')) {
+                    icon = 'bi-check2-circle';
+                    iconBg = 'bg-purple-100'; 
+                    iconColor = 'text-purple-500';
+                } else if (activity.includes('Generated')) {
+                    icon = 'bi-file-earmark-text';
+                    iconBg = 'bg-amber-100';
+                    iconColor = 'text-amber-500';
+                }
+                
+                newActivity.innerHTML = `
+                    <div class="p-2 ${iconBg} ${iconColor} rounded-full">
+                        <i class="bi ${icon}"></i>
+                    </div>
+                    <div>
+                        <p class="text-gray-800">${activity}</p>
+                        <p class="text-xs text-gray-400 mt-1">Just now</p>
+                    </div>
+                `;
+                
+                // Insert new activity at the top
+                recentActivity.insertBefore(newActivity, recentActivity.firstChild);
+            }
+        }
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
